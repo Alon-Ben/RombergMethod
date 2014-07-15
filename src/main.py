@@ -1,26 +1,23 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from __future__ import print_function
 from numpy import add, isscalar, asarray, arange
+from scipy.integrate.quadrature import tupleset
 
+def RombergMethod(y, dx, show=False):
 
-def tupleset(t, i, value):
-    l = list(t)
-    l[i] = value
-    return tuple(l)
-
-def romb(y, dx=1.0, axis=-1, show=False):
-
+    axis=-1
     y = asarray(y)
     nd = len(y.shape)
     Nsamps = y.shape[axis]
     Ninterv = Nsamps-1
     n = 1
     k = 0
+
     while n < Ninterv:
         n <<= 1
         k += 1
-    if n != Ninterv:
-        raise ValueError("Number of samples must be one plus a "
-                "non-negative power of 2.")
 
     R = {}
     all = (slice(None),) * nd
@@ -41,40 +38,26 @@ def romb(y, dx=1.0, axis=-1, show=False):
         h = h / 2.0
 
     if show:
-        if not isscalar(R[(1,1)]):
-            print("*** Printing table only supported for integrals" +
-                  " of a single data set.")
-        else:
-            try:
-                precis = show[0]
-            except (TypeError, IndexError):
-                precis = 5
-            try:
-                width = show[1]
-            except (TypeError, IndexError):
-                width = 8
-            formstr = "%" + str(width) + '.' + str(precis)+'f'
+        precis = 5
+        width = 8
+        formstr = "%" + str(width) + '.' + str(precis)+'f'
 
-            print("\n       Richardson Extrapolation Table for Romberg Integration       ")
-            print("====================================================================")
-            for i in range(1,k+1):
-                for j in range(1,i+1):
-                    print(formstr % R[(i,j)], end=' ')
-                print()
-            print("====================================================================\n")
+        print('\nMétodo de Romberg')
+        print('----------------------------------')
+        for i in range(1,k+1):
+            for j in range(1,i+1):
+                print(formstr % R[(i,j)], end=' ')
+            print()
+        print('----------------------------------')
 
     return R[(k,k)]
 
 
 def main():
-    a = arange(9)
+    data_sample = [1.8, 2, 4, 4, 6, 4, 3.6, 3.4, 2.8]
+    res = RombergMethod(data_sample, 2.0, show=True)
 
-    for num in a:
-        print (num)
-
-    romb(a, show=True)
-
+    print('Resultado: {}m²'.format(res))
 
 if __name__ == "__main__":
-
     main()
